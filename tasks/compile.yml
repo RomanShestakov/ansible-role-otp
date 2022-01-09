@@ -30,12 +30,12 @@
   when: otp_make.changed
   register: otp_install
 
-- name: OTP | add path to /etc/profile.d/otp_path.sh
-  become: true
-  action: template src=otp_path.sh.j2
-          dest="/etc/profile.d/otp_path.sh"
-          mode=0644
-  when: otp_install.changed
+# - name: OTP | add path to /etc/profile.d/otp_path.sh
+#   become: true
+#   action: template src=otp_path.sh.j2
+#           dest="/etc/profile.d/otp_path.sh"
+#           mode=0644
+#   when: otp_install.changed
 
 - name: OTP | cleanup tmp
   become: true
