@@ -1,0 +1,62 @@
+---
+
+- name: OTP | check if install exists
+  stat:
+    path: "{{ otp_install_dir }}/bin/erl"
+  register: otp_exists
+
+- name: OTP | Get sources
+  become: true
+  get_url: url={{otp_url}} dest={{otp_tmp}} timeout=180 force=no
+  when: not otp_exists.stat.exists
+  register: otp_downloaded
+
+- name: OTP | Extract sources
+  become: true
+  unarchive: src={{otp_tmp}}
+             dest="/tmp"
+             creates={{otp_build}}
+             remote_src=yes
+  when: otp_downloaded.changed
+  register: otp_extract
+
+- name: OTP | Configure
+  become: true
+  shell: chdir={{otp_build}} ./configure --prefix={{otp_install_dir}}
+  when: otp_extract.changed
+  register: otp_configure
+
+- name: OTP | Make
+  become: true
+  shell: chdir={{otp_build}} make
+  when: otp_configure.changed
+  register: otp_make
+
+- name: OTP | Install
+  become: true
+  shell: chdir={{otp_build}} make install
+  when: otp_make.changed
+  register: otp_install
+
+- name: OTP | add path to /etc/profile.d/otp_path.sh
+  become: true
+  action: template src=otp_path.sh.j2
+          dest="/etc/profile.d/otp_path.sh"
+          mode=0644
+  when: otp_install.changed
+
+- name: OTP | cleanup build dir
+  become: true
+  file:
+    path: "{{ otp_build }}"
+    state: absent
+  when: otp_install.changed
+
+- name: OTP | cleanup tmp
+  become: true
+  file:
+    path: "{{ otp_tmp }}"
+    state: absent
+  when: otp_install.changed
+
+...
