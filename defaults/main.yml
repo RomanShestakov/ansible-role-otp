@@ -1,9 +1,8 @@
 # file: defaults/main.yml
 
 otp_version: "24.1"
-otp_url: "http://erlang.org/download/otp_src_{{otp_version}}.tar.gz"
-otp_tmp: "/tmp/otp_src_{{otp_version}}.tar.gz"
-otp_build: "/tmp/otp_src_{{otp_version}}"
+otp_repo_url: "https://github.com/erlang/otp.git"
+otp_tmp: "/tmp/otp_{{otp_version}}"
 otp_install_dir: "/opt/otp-{{otp_version}}"
 otp_build_flags: ""
 otp_configure_flags: ""
