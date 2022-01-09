@@ -2,7 +2,7 @@
 
 - name: OTP | check if install exists
   stat:
-    path: "{{ otp_install_dir }}/bin/erl"
+    path: "{{ otp_install_dir }}"
   register: otp_exists
 
 - name: OTP | get from git repository
