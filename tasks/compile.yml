@@ -8,7 +8,7 @@
 - name: OTP | get from git repository
   git: repo="{{ otp_repo_url }}"
        dest="{{ otp_tmp }}"
-       version="{{ version }}"
+       version="{{ otp_version }}"
   when: not otp_exists.stat.exists
   register: otp_downloaded
 
