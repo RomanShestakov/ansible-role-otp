@@ -36,7 +36,7 @@
     dest: "/usr/local/bin/{{ item.dest }}"
     state: link
     force: yes
-    when: otp_make.changed
+  when: otp_make.changed
   with_items:
     - { path: 'erl', dest: 'erl' }
     - { path: 'erlc', dest: 'erlc' }
