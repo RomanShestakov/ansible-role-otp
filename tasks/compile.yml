@@ -30,12 +30,21 @@
   when: otp_make.changed
   register: otp_install
 
-# - name: OTP | add path to /etc/profile.d/otp_path.sh
-#   become: true
-#   action: template src=otp_path.sh.j2
-#           dest="/etc/profile.d/otp_path.sh"
-#           mode=0644
-#   when: otp_install.changed
+- name: OTP | create a symlink
+  file:
+    src: "{{ otp_install_dir }}/bin/{{ item.path }}"
+    dest: "/usr/local/bin/{{ item.dest }}"
+    state: link
+  with_items:
+    - { path: 'erl', dest: 'erl' }
+    - { path: 'erlc', dest: 'erlc' }
+    - { path: 'ct_run', dest: 'ct_run' }
+    - { path: 'dializer', dest: 'dializer' }
+    - { path: 'epmd', dest: 'epmd' }
+    - { path: 'escript', dest: 'escript' }
+    - { path: 'run_erl', dest: 'run_erl' }
+    - { path: 'to_erl', dest: 'to_erl' }
+    - { path: 'typer', dest: 'typer' }
 
 - name: OTP | cleanup tmp
   become: true
