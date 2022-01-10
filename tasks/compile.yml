@@ -39,7 +39,7 @@
     - { path: 'erl', dest: 'erl' }
     - { path: 'erlc', dest: 'erlc' }
     - { path: 'ct_run', dest: 'ct_run' }
-    - { path: 'dializer', dest: 'dializer' }
+    - { path: 'dialyzer', dest: 'dialyzer' }
     - { path: 'epmd', dest: 'epmd' }
     - { path: 'escript', dest: 'escript' }
     - { path: 'run_erl', dest: 'run_erl' }
