@@ -35,6 +35,7 @@
     src: "{{ otp_install_dir }}/bin/{{ item.path }}"
     dest: "/usr/local/bin/{{ item.dest }}"
     state: link
+    force: yes
   with_items:
     - { path: 'erl', dest: 'erl' }
     - { path: 'erlc', dest: 'erlc' }
