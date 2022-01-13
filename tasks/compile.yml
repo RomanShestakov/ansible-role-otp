@@ -30,6 +30,12 @@
   when: otp_make.changed
   register: otp_install
 
+- name: OTP | set ERLANG_HOME env in /etc/profile.d/otp_path.sh
+  become: true
+  action: template src=otp_path.sh.j2
+          dest="/etc/profile.d/otp_path.sh"
+          mode=0644
+
 - name: OTP | create a symlink
   file:
     src: "{{ otp_install_dir }}/bin/{{ item.path }}"
