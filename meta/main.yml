@@ -13,5 +13,5 @@ galaxy_info:
   categories:
   - system
 
-dependencies:
-  - {}
+#dependencies:
+  # - { role: ANXS.build-essential, tags: build-essential }
