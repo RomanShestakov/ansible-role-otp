@@ -1,3 +1,4 @@
 # file: tasks/main.yml
 
 - include: compile.yml
+- include: elixir.yml
