@@ -7,7 +7,7 @@
 
 - name: OTP | Get OTP sources
   become: true
-  get_url: url="{{ otp_url }}" dest="{{ otp_tmp }}" timeout=180 force=no
+  get_url: url="{{ otp_url }}" dest="{{ otp_tmp }}" timeout=360 force=no
   when: not otp_exists.stat.exists
   register: otp_downloaded
 
@@ -15,7 +15,6 @@
   become: true
   unarchive: src="{{ otp_tmp }}"
              dest="/tmp"
-             creates="{{ otp_build }}"
              remote_src=yes
   when: otp_downloaded.changed
   register: otp_extract
