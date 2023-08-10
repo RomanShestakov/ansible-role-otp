@@ -2,57 +2,65 @@
 
 - name: OTP | check if install exists
   stat:
-    path: "{{ otp_install_dir }}"
+    path: "{{ otp_install_dir }}/bin/erl"
   register: otp_exists
 
-- name: OTP | get from git repository
-  git: repo="{{ otp_repo_url }}"
-       dest="{{ otp_tmp }}"
-       version="{{ otp_version }}"
+- name: OTP | Get OTP sources
+  become: true
+  get_url: url="{{ otp_url }}" dest="{{ otp_tmp }}" timeout=180 force=no
   when: not otp_exists.stat.exists
   register: otp_downloaded
 
+- name: OTP | Extract OTP sources
+  become: true
+  unarchive: src="{{ otp_tmp }}"
+             dest="/tmp"
+             creates="{{ otp_build }}"
+             remote_src=yes
+  when: otp_downloaded.changed
+  register: otp_extract
+
 - name: OTP | Configure
   become: true
-  shell: chdir={{otp_tmp}} ./configure --prefix={{otp_install_dir}}
-  when: otp_downloaded.changed
+  shell: chdir="{{otp_tmp}}" ./configure --prefix="{{otp_install_dir}}"
+  when: otp_extract.changed
   register: otp_configure
 
 - name: OTP | Make
   become: true
-  shell: chdir={{otp_tmp}} make
+  shell: chdir="{{otp_tmp}}" make
   when: otp_configure.changed
   register: otp_make
 
 - name: OTP | Install
   become: true
-  shell: chdir={{otp_tmp}} make install
+  shell: chdir="{{otp_tmp}}" make install
   when: otp_make.changed
   register: otp_install
 
-- name: OTP | set ERLANG_HOME env in /etc/profile.d/otp_path.sh
-  become: true
-  action: template src=otp_path.sh.j2
-          dest="/etc/profile.d/otp_path.sh"
-          mode=0644
+# - name: OTP | set ERLANG_HOME env in /etc/profile.d/otp_path.sh
+#   become: true
+#   action: template src=otp_path.sh.j2
+#           dest="/etc/profile.d/otp_path.sh"
+#           mode=0644
 
-- name: OTP | create a symlink
-  file:
-    src: "{{ otp_install_dir }}/bin/{{ item.path }}"
-    dest: "/usr/local/bin/{{ item.dest }}"
-    state: link
-    force: yes
-  when: otp_make.changed
-  with_items:
-    - { path: 'erl', dest: 'erl' }
-    - { path: 'erlc', dest: 'erlc' }
-    - { path: 'ct_run', dest: 'ct_run' }
-    - { path: 'dialyzer', dest: 'dialyzer' }
-    - { path: 'epmd', dest: 'epmd' }
-    - { path: 'escript', dest: 'escript' }
-    - { path: 'run_erl', dest: 'run_erl' }
-    - { path: 'to_erl', dest: 'to_erl' }
-    - { path: 'typer', dest: 'typer' }
+# - name: OTP | create a symlink
+#   file:
+#     src: "{{ otp_install_dir }}/bin/{{ item.path }}"
+#     dest: "/usr/local/bin/{{ item.dest }}"
+#     state: link
+#     force: yes
+#   when: otp_make.changed
+#   with_items:
+#     - { path: 'erl', dest: 'erl' }
+#     - { path: 'erlc', dest: 'erlc' }
+#     - { path: 'ct_run', dest: 'ct_run' }
+#     - { path: 'dialyzer', dest: 'dialyzer' }
+#     - { path: 'epmd', dest: 'epmd' }
+#     - { path: 'escript', dest: 'escript' }
+#     - { path: 'run_erl', dest: 'run_erl' }
+#     - { path: 'to_erl', dest: 'to_erl' }
+#     - { path: 'typer', dest: 'typer' }
 
 - name: OTP | cleanup tmp
   become: true
