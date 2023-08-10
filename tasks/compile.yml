@@ -28,13 +28,13 @@
 
 - name: OTP | Make
   become: true
-  shell: chdir="{{otp_tmp}}" make
+  shell: chdir="{{otp_build}}" make
   when: otp_configure.changed
   register: otp_make
 
 - name: OTP | Install
   become: true
-  shell: chdir="{{otp_tmp}}" make install
+  shell: chdir="{{otp_build}}" make install
   when: otp_make.changed
   register: otp_install
 
