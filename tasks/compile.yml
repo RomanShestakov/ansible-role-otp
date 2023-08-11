@@ -7,7 +7,12 @@
 
 - name: OTP | Get OTP sources
   become: true
-  get_url: url="{{ otp_url }}" dest="{{ otp_tmp }}" timeout=360 force=no
+  ansible.builtin.get_url:
+    url: "{{ otp_url }}"
+    dest: "{{ otp_tmp }}"
+    checksum: "{{opt_checksum}}"
+    timeout: 360
+    force: no
   when: not otp_exists.stat.exists
   register: otp_downloaded
 
