@@ -10,7 +10,7 @@
   ansible.builtin.get_url:
     url: "{{ otp_url }}"
     dest: "{{ otp_tmp }}"
-    checksum: "{{opt_checksum}}"
+    checksum: "{{otp_checksum}}"
     timeout: 360
     force: no
   when: not otp_exists.stat.exists
