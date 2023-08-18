@@ -14,12 +14,27 @@
   - erlang
   when: ( ansible_distribution == "Ubuntu" and not otp_exists.stat.exists )
 
+- name: OTP | Get OTP checksum
+  ansible.builtin.uri:
+    url: "{{ otp_checksum_url }}"
+    return_content: true
+  register: md5checksum
+
+- name: OTP | Parse MD5 checksum
+  ansible.builtin.set_fact:
+    otp_checksum: "{{ md5checksum.content.split('  ')[0] }}"      # there are 2 spaces
+
+- name: OTP | Print checksum
+  ansible.builtin.debug:
+    msg: CheckSum "{{ opt_checksum }}"
+  when: otp_checksum is defined
+
 - name: OTP | Get OTP sources
   become: true
   ansible.builtin.get_url:
     url: "{{ otp_url }}"
     dest: "{{ otp_tmp }}"
-    checksum: "{{otp_checksum}}"
+    #checksum: "{{otp_checksum}}"
     timeout: 360
     force: no
   when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and not otp_exists.stat.exists)
