@@ -28,7 +28,7 @@
 - name: OTP | Print checksum
   ansible.builtin.debug:
     msg: CheckSum "{{ opt_checksum }}[0]"
-  when: otp_checksum.stat.exists
+  when: otp_checksum is defined
 
 - name: OTP | Get OTP sources
   become: true
