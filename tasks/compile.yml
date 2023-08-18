@@ -12,7 +12,7 @@
     update_cache: yes
   with_items:
   - erlang
-  when: ( ansible_distribution == "Ubuntu" not otp_exists.stat.exists )
+  when: ( ansible_distribution == "Ubuntu" and not otp_exists.stat.exists )
 
 - name: OTP | Get OTP sources
   become: true
