@@ -27,7 +27,7 @@
     otp_checksum: "{{ md5checksum.content }}"
 
 - debug:
-    msg: "CheckSum = {{ opt_checksum }}[0]"
+    msg: "CheckSum = {{ otp_checksum }}[0]"
 
 - name: OTP | Get OTP sources
   become: true
