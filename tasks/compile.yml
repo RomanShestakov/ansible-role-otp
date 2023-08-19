@@ -23,12 +23,11 @@
 # MD5(otp_src_26.0.tar.gz)= 4c96f3e7414b4b31aaf02bc7b47bbc91
 - name: OTP | Parse MD5 checksum
   ansible.builtin.set_fact:
-    otp_checksum: "{{ md5checksum.content | regex_search( 'otp_src_{{ otp_version }}.tar.gz?= (.*)') }}"
+    #otp_checksum: "{{ md5checksum.content | regex_search( 'otp_src_{{ otp_version }}.tar.gz?= (.*)') }}"
+    otp_checksum: "{{ md5checksum.content }}"
 
-- name: OTP | Print checksum
-  ansible.builtin.debug:
-    msg: CheckSum "{{ opt_checksum }}[0]"
-  when: otp_checksum is defined
+- debug:
+    msg: "CheckSum = {{ opt_checksum }}[0]"
 
 - name: OTP | Get OTP sources
   become: true
