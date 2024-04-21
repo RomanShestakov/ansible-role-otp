@@ -5,23 +5,23 @@
     path: "{{ otp_install_dir }}/bin/erl"
   register: otp_exists
 
-- name: OTP | Gather date and time only
-  setup:
-    gather_subset:
-      # - "date_time"
-      - "distribution"
-      # - "!min"
-  #when: ansible_date_time is not defined
-  when: distribution is not defined
+# - name: OTP | Gather date and time only
+#   setup:
+#     gather_subset:
+#       # - "date_time"
+#       - "distribution"
+#       # - "!min"
+#   #when: ansible_date_time is not defined
+#   when: distribution is not defined
   
-- name: OTP | Install Erlang for Ubuntu
-  ansible.builtin.apt:
-    name: "{{ item }}"
-    state: latest
-    update_cache: yes
-  with_items:
-  - erlang
-  when: ( ansible_distribution == "Ubuntu" and not otp_exists.stat.exists )
+# - name: OTP | Install Erlang for Ubuntu
+#   ansible.builtin.apt:
+#     name: "{{ item }}"
+#     state: latest
+#     update_cache: yes
+#   with_items:
+#   - erlang
+#   when: ( ansible_distribution == "Ubuntu" and not otp_exists.stat.exists )
 
 - name: OTP | Get OTP checksum
   ansible.builtin.uri:
@@ -46,7 +46,7 @@
     #checksum: "{{otp_checksum}}"
     timeout: 360
     force: no
-  when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and not otp_exists.stat.exists)
+  #when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and not otp_exists.stat.exists)
   register: otp_downloaded
 
 - name: OTP | Extract OTP sources
@@ -54,25 +54,25 @@
   unarchive: src="{{ otp_tmp }}"
              dest="/tmp"
              remote_src=yes
-  when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_downloaded.changed)
+  #when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_downloaded.changed)
   register: otp_extract
 
 - name: OTP | Configure
   become: true
   shell: chdir="{{otp_build}}" ./configure --prefix="{{otp_install_dir}}"
-  when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_extract.changed)
+  #when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_extract.changed)
   register: otp_configure
 
 - name: OTP | Make
   become: true
   shell: chdir="{{otp_build}}" make
-  when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_configure.changed)
+  #when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_configure.changed)
   register: otp_make
 
 - name: OTP | Install
   become: true
   shell: chdir="{{otp_build}}" make install
-  when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_make.changed)
+  #when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_make.changed)
   register: otp_install
 
 - name: OTP | cleanup tmp
@@ -80,6 +80,6 @@
   file:
     path: "{{ otp_tmp }}"
     state: absent
-  when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_install.changed)
+  #when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_install.changed)
 
 ...
