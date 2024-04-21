@@ -9,10 +9,10 @@
   setup:
     gather_subset:
       # - "date_time"
-      - "ansible_distribution"
+      - "distribution"
       # - "!min"
   #when: ansible_date_time is not defined
-  when: ansible_distribution is not defined
+  when: distribution is not defined
   
 - name: OTP | Install Erlang for Ubuntu
   ansible.builtin.apt:
