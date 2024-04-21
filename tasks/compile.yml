@@ -5,6 +5,15 @@
     path: "{{ otp_install_dir }}/bin/erl"
   register: otp_exists
 
+- name: OTP | Gather date and time only
+  setup:
+    gather_subset:
+      # - "date_time"
+      - "ansible_distribution"
+      # - "!min"
+  #when: ansible_date_time is not defined
+  when: ansible_distribution is not defined
+  
 - name: OTP | Install Erlang for Ubuntu
   ansible.builtin.apt:
     name: "{{ item }}"
