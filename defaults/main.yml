@@ -1,6 +1,6 @@
 # file: defaults/main.yml
 
-otp_version: "26.0"
+otp_version: "27.1"
 otp_url: "http://erlang.org/download/otp_src_{{ otp_version }}.tar.gz"
 otp_checksum_url: "http://erlang.org/download/MD5"
 otp_tmp: "/tmp/otp_{{otp_version}}.tar.gz"
@@ -9,7 +9,7 @@ otp_install_dir: "/usr/local"
 otp_build_flags: ""
 otp_configure_flags: ""
 
-elixir_version: "1.16.2"
+elixir_version: "1.17.3"
 elixir_url: "https://github.com/elixir-lang/elixir/archive/refs/tags/v{{elixir_version}}.tar.gz"
 elixir_tmp: "/tmp/elixir_v{{elixir_version}}.tar.gz"
 elixir_build: "/tmp/elixir-{{elixir_version}}"
