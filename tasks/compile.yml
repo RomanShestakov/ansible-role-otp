@@ -65,7 +65,7 @@
 
 - name: OTP | Make
   become: true
-  shell: chdir="{{otp_build}}" make
+  shell: chdir="{{otp_build}}" make -j 4
   #when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_configure.changed)
   register: otp_make
 
