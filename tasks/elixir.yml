@@ -8,7 +8,7 @@
 - name: Elixir | Get Elixir sources
   become: true
   get_url: url="{{ elixir_url }}" dest="{{ elixir_tmp }}" timeout=180 force=no
-  when: not elixir_exists.stat.exists
+  #when: not elixir_exists.stat.exists
   register: elixir_downloaded
 
 - name: Elixir | Extract Elixir sources
