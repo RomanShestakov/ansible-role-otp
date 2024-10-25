@@ -17,7 +17,7 @@
              dest="/tmp"
              creates="{{ elixir_build }}"
              remote_src=yes
-  when: elixir_downloaded.changed
+  #when: elixir_downloaded.changed
   register: elixir_extract
 
 # - name: OTP | Configure
@@ -29,13 +29,13 @@
 - name: Elixir | Make
   become: true
   shell: chdir="{{elixir_build}}" make
-  when: elixir_extract.changed
+  #when: elixir_extract.changed
   register: elixir_make
 
 - name: Elixir | Install
   become: true
   shell: chdir="{{elixir_build}}" make install
-  when: elixir_make.changed
+  #when: elixir_make.changed
   register: elixir_install
 
 - name: Elixir | cleanup tmp
@@ -43,6 +43,6 @@
   file:
     path: "{{ elixir_tmp }}"
     state: absent
-  when: elixir_install.changed
+  #when: elixir_install.changed
 
 ...
