@@ -7,6 +7,8 @@ ansible localhost --module-name include_role --args name=<role_name>
 
 e.g
 export ANSIBLE_ROLES_PATH=/home/romanshestakov/development;
+
+cd $ANSIBLE_ROLES_PATH
 sudo ansible localhost --module-name include_role --args name=ansible-role-otp
 
 to install prerequisite dependencies libwxgtk use ansible-role-wxWidgets
