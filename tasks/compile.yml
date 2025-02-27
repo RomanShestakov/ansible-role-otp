@@ -1,9 +1,9 @@
 ---
 
-- name: OTP | check if install exists
-  stat:
-    path: "{{ otp_install_dir }}/bin/erl"
-  register: otp_exists
+# - name: OTP | check if install exists
+#   stat:
+#     path: "{{ otp_install_dir }}/bin/erl"
+#   register: otp_exists
 
 # - name: OTP | Gather date and time only
 #   setup:
@@ -75,11 +75,11 @@
   #when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_make.changed)
   register: otp_install
 
-- name: OTP | cleanup tmp
-  become: true
-  file:
-    path: "{{ otp_tmp }}"
-    state: absent
-  #when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_install.changed)
+# - name: OTP | cleanup tmp
+#   become: true
+#   file:
+#     path: "{{ otp_tmp }}"
+#     state: absent
+#   #when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_install.changed)
 
 ...
