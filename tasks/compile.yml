@@ -35,7 +35,7 @@
   unarchive: src="{{ otp_tmp }}"
              dest="/tmp"
              remote_src=yes
-  when: opt_downloaded.changed
+  when: otp_downloaded.changed
   register: otp_extract
 
 - name: OTP | Configure
