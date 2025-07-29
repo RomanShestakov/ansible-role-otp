@@ -1,39 +1,20 @@
 ---
 
-# - name: OTP | check if install exists
-#   stat:
-#     path: "{{ otp_install_dir }}/bin/erl"
-#   register: otp_exists
-
-# - name: OTP | Gather date and time only
-#   setup:
-#     gather_subset:
-#       # - "date_time"
-#       - "distribution"
-#       # - "!min"
-#   #when: ansible_date_time is not defined
-#   when: distribution is not defined
-  
-# - name: OTP | Install Erlang for Ubuntu
-#   ansible.builtin.apt:
-#     name: "{{ item }}"
-#     state: latest
-#     update_cache: yes
-#   with_items:
-#   - erlang
-#   when: ( ansible_distribution == "Ubuntu" and not otp_exists.stat.exists )
+- name: OTP | check current opt version
+  debug:
+    msg: "erlang version: {{ ansible_local.erlang.version | default( 0 ) }}"
 
 - name: OTP | Get OTP checksum
   ansible.builtin.uri:
     url: "{{ otp_checksum_url }}"
     return_content: true
   register: md5checksum
+  when: ( ansible_local.otp.version | default( 0 ) != otp_version )
 
 # MD5(otp_src_26.0.tar.gz)= 4c96f3e7414b4b31aaf02bc7b47bbc91
 - name: OTP | Parse MD5 checksum
   ansible.builtin.set_fact:
     otp_checksum: "{{ md5checksum.content | regex_search( 'otp_src_{{ otp_version }}.tar.gz?= (.*)') }}"
-    #otp_checksum: "{{ md5checksum.content }}"
 
 - debug:
     msg: "CheckSum = {{ otp_checksum }}[0]"
@@ -43,10 +24,10 @@
   ansible.builtin.get_url:
     url: "{{ otp_url }}"
     dest: "{{ otp_tmp }}"
-    #checksum: "{{otp_checksum}}"
+    checksum: "{{otp_checksum}}"
     timeout: 360
     force: no
-  #when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and not otp_exists.stat.exists)
+  when: ( ansible_local.otp.version | default( 0 ) != otp_version )
   register: otp_downloaded
 
 - name: OTP | Extract OTP sources
@@ -54,32 +35,50 @@
   unarchive: src="{{ otp_tmp }}"
              dest="/tmp"
              remote_src=yes
-  #when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_downloaded.changed)
+  when: opt_downloaded.changed
   register: otp_extract
 
 - name: OTP | Configure
   become: true
   shell: chdir="{{otp_build}}" ./configure --prefix="{{otp_install_dir}}"
-  #when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_extract.changed)
+  when: opt_extract.changed
   register: otp_configure
 
 - name: OTP | Make
   become: true
   shell: chdir="{{otp_build}}" make -j 4
-  #when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_configure.changed)
+  when: opt_configure.changed
   register: otp_make
 
 - name: OTP | Install
   become: true
   shell: chdir="{{otp_build}}" make install
-  #when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_make.changed)
+  when: opt_make.changed
   register: otp_install
 
-# - name: OTP | cleanup tmp
-#   become: true
-#   file:
-#     path: "{{ otp_tmp }}"
-#     state: absent
-#   #when: (ansible_distribution == "Amazon" and ansible_distribution_major_version|int == 2023 and otp_install.changed)
+- name: OPT | Create a directory for custom facts /etc/ansible/facts.d
+  file:
+    path: /etc/ansible/facts.d
+    state: directory
+    recurse: yes
+    mode: '0644'
+  when: otp_install.changed
+  become: true
+
+- name: OTP | add opt version customfact into /etc/ansible/facts.d
+  action: template src=opt.fact-template.j2
+          dest="/etc/ansible/facts.d/otp.fact"
+          mode=0644
+  when: otp_install.changed
+  become: true
+  
+- name: OTP | cleanup tmp
+  become: true
+  file:
+    path: "{{ otp_tmp }}"
+    state: absent
+  when: otp_install.changed
 
 ...
+
+
