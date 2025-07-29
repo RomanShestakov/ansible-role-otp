@@ -41,7 +41,7 @@
 - name: OTP | Configure
   become: true
   shell: chdir="{{otp_build}}" ./configure --prefix="{{otp_install_dir}}"
-  when: opt_extract.changed
+  when: otp_extract.changed
   register: otp_configure
 
 - name: OTP | Make
