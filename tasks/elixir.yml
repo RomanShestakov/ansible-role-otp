@@ -1,14 +1,13 @@
 ---
 
-# - name: Elixir | check if install exists
-#   stat:
-#     path: "{{ elixir_install_dir }}/bin/iex"
-#   register: elixir_exists
+- name: Elixir | check current elixir version
+  debug:
+    msg: "elixir version: {{ ansible_local.otp.elixir_version | default( 0 ) }}"
 
 - name: Elixir | Get Elixir sources
   become: true
   get_url: url="{{ elixir_url }}" dest="{{ elixir_tmp }}" timeout=180 force=no
-  #when: not elixir_exists.stat.exists
+  when: ( ansible_local.otp.elixir_version | default( 0 ) != elixir_version )
   register: elixir_downloaded
 
 - name: Elixir | Extract Elixir sources
@@ -17,32 +16,42 @@
              dest="/tmp"
              creates="{{ elixir_build }}"
              remote_src=yes
-  #when: elixir_downloaded.changed
+  when: elixir_downloaded.changed
   register: elixir_extract
-
-# - name: OTP | Configure
-#   become: true
-#   shell: chdir="{{otp_build}}" ./configure --prefix="{{otp_install_dir}}"
-#   when: otp_extract.changed
-#   register: otp_configure
 
 - name: Elixir | Make
   become: true
   shell: chdir="{{elixir_build}}" make
-  #when: elixir_extract.changed
+  when: elixir_extract.changed
   register: elixir_make
 
 - name: Elixir | Install
   become: true
   shell: chdir="{{elixir_build}}" make install
-  #when: elixir_make.changed
+  when: elixir_make.changed
   register: elixir_install
 
-# - name: Elixir | cleanup tmp
-#   become: true
-#   file:
-#     path: "{{ elixir_tmp }}"
-#     state: absent
-#   #when: elixir_install.changed
+- name: Elixir | Create a directory for custom facts /etc/ansible/facts.d
+  file:
+    path: /etc/ansible/facts.d
+    state: directory
+    recurse: yes
+    mode: '0644'
+  when: elixir_install.changed
+  become: true
+
+- name: Elixir | add opt version customfact into /etc/ansible/facts.d
+  action: template src=otp.fact-template.j2
+          dest="/etc/ansible/facts.d/otp.fact"
+          mode=0644
+  when: elixir_install.changed
+  become: true
+  
+- name: Elixir | cleanup tmp
+  become: true
+  file:
+    path: "{{ elixir_tmp }}"
+    state: absent
+  when: elixir_install.changed
 
 ...

@@ -2,14 +2,14 @@
 
 - name: OTP | check current otp version
   debug:
-    msg: "erlang version: {{ ansible_local.erlang.version | default( 0 ) }}"
+    msg: "erlang version: {{ ansible_local.otp.erlang_version | default( 0 ) }}"
 
 - name: OTP | Get OTP checksum
   ansible.builtin.uri:
     url: "{{ otp_checksum_url }}"
     return_content: true
   register: md5checksum
-  when: ( ansible_local.otp.version | default( 0 ) != otp_version )
+  when: ( ansible_local.otp.erlang_version | default( 0 ) != otp_version )
 
 # MD5(otp_src_26.0.tar.gz)= 4c96f3e7414b4b31aaf02bc7b47bbc91
 - name: OTP | Parse MD5 checksum
