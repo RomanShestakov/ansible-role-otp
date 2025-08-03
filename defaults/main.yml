@@ -16,3 +16,7 @@ elixir_url: "https://github.com/elixir-lang/elixir/archive/refs/tags/v{{elixir_v
 elixir_tmp: "/tmp/elixir_v{{elixir_version}}.tar.gz"
 elixir_build: "/tmp/elixir-{{elixir_version}}"
 elixir_install_dir: "/usr/local"
+
+# build from source or install binary
+build_from_sources: false
+

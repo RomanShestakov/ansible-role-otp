@@ -1,6 +1,19 @@
 # file: tasks/main.yml
 
-- include_tasks: compile.yml
-- include_tasks: elixir.yml
+- name: OTP | Build from source
+  block:
+    - include_tasks: compile.yml
+    - include_tasks: elixir.yml
+  when: build_from_sources
 
+- name: OTP | Install Binary
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+    cache_valid_time: 3600
+  when: not build_from_sources
+  with_items:
+    - erlang
+    - elixir
 ...
